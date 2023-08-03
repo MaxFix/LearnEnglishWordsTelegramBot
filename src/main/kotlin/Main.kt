@@ -11,8 +11,16 @@ fun main(args: Array<String>) {
         dictionary.add(word)
     }
 
-    dictionary.forEach {
-        println(it)
+    while (true) {
+        val correctAnswersCount = dictionary.filter { it.learned == 3 }.size
+        val correctAnswersPercent = (correctAnswersCount * 100) / wordsFile.size
+        println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
+        when (readln().toInt()) {
+            1 -> println("Учить слова")
+            2 -> println("Статистика: Выучено $correctAnswersCount из ${wordsFile.size} | ${correctAnswersPercent}%")
+            0 -> break
+            else -> println("Предупреждение! Вводить можно только 0, 1 или 2")
+        }
     }
 }
 
