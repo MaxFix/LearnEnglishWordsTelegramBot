@@ -11,6 +11,14 @@ fun main(args: Array<String>) {
         dictionary.add(word)
     }
 
+    fun saveDictionary(mutableList: MutableList<Word>) {
+        val wordsFile1 = File("some_words.txt")
+        mutableList.forEach {
+            val word = Word(original = it.original, translate = it.translate, learned = it.learned)
+            wordsFile1.writeText("${word.original}|${word.translate}|${word.learned}")
+        }
+    }
+
     while (true) {
         val correctAnswersCount = dictionary.filter { it.learned == 3 }.size
         val correctAnswersPercent = (correctAnswersCount * 100) / wordsFile.size
@@ -20,9 +28,11 @@ fun main(args: Array<String>) {
                 val unlearnedWords = dictionary.filter { it.learned < 3 }
 
                 if (unlearnedWords.isNotEmpty()) {
-                    var learnedWords = listOf<Word>().filter { it.learned >= 3 }
+                    var learnedWords = dictionary.filter { it.learned >= 3 }
                     val selectedValues = unlearnedWords.shuffled().take(4)
-                    if (selectedValues.size < 4) learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
+                    if (selectedValues.size < 4) {
+                        learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
+                    }
 
                     val unlearnedWord = selectedValues.random().original
                     println("Исходное слово: $unlearnedWord")
@@ -31,6 +41,14 @@ fun main(args: Array<String>) {
                     allWords.forEachIndexed { index, value ->
                         val number = index + 1
                         println("${number}: ${value.translate}")
+                    }
+                    val userInput = readln().toInt()
+                    val answerIndex = allWords.indexOfFirst { it.original == unlearnedWord } + 1
+                    if (userInput == answerIndex) {
+                        println("Верно!")
+                        val selectedWord = dictionary.find { it.original == unlearnedWord }
+                        selectedWord?.learned = selectedWord?.learned?.plus(1)!!
+                        saveDictionary(dictionary)
                     }
                 } else {
                     println("Вы выучили все слова")
@@ -48,5 +66,5 @@ fun main(args: Array<String>) {
 data class Word(
     val original: String,
     val translate: String,
-    val learned: Int = 0,
+    var learned: Int = 0,
 )
