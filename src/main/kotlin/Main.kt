@@ -22,9 +22,7 @@ fun main(args: Array<String>) {
 
                 if (unlearnedWords.isNotEmpty()) {
                     val selectedValues = unlearnedWords.shuffled().take(4)
-                    if (selectedValues.size < 4) {
-                        learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
-                    }
+                    if (selectedValues.size < 4) learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
 
                     val unlearnedWord = selectedValues.random().original
                     println("Исходное слово: $unlearnedWord")
