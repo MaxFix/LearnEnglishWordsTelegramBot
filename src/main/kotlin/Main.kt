@@ -17,20 +17,20 @@ fun main(args: Array<String>) {
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
         when (readln().toInt()) {
             1 -> {
-                var unlearnedWords = dictionary.filter { it.learned < 3 }
+                val unlearnedWords = dictionary.filter { it.learned < 3 }
+                var learnedWords = dictionary.filter { it.learned >= 3 }
 
                 if (unlearnedWords.isNotEmpty()) {
-                    val selectedValues = mutableListOf<Word>()
-                    unlearnedWords = unlearnedWords.shuffled()
-
-                    unlearnedWords.take(4).forEach {
-                        selectedValues.add(it)
+                    val selectedValues = unlearnedWords.shuffled().take(4)
+                    if (selectedValues.size < 4) {
+                        learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
                     }
 
                     val unlearnedWord = selectedValues.random().original
                     println("Исходное слово: $unlearnedWord")
 
-                    selectedValues.forEachIndexed { index, value ->
+                    val allWords = unlearnedWords + learnedWords
+                    allWords.forEachIndexed { index, value ->
                         val number = index + 1
                         println("${number}: ${value.translate}")
                     }
