@@ -18,10 +18,9 @@ fun main(args: Array<String>) {
         when (readln().toInt()) {
             1 -> {
                 val unlearnedWords = dictionary.filter { it.learned < 3 }
-                var learnedWords = listOf<Word>()
-                if (unlearnedWords.isNotEmpty()) learnedWords = dictionary.filter { it.learned >= 3 }
 
                 if (unlearnedWords.isNotEmpty()) {
+                    var learnedWords = listOf<Word>().filter { it.learned >= 3 }
                     val selectedValues = unlearnedWords.shuffled().take(4)
                     if (selectedValues.size < 4) learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
 
