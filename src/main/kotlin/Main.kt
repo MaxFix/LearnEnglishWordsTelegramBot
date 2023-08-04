@@ -16,7 +16,28 @@ fun main(args: Array<String>) {
         val correctAnswersPercent = (correctAnswersCount * 100) / wordsFile.size
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
         when (readln().toInt()) {
-            1 -> println("Учить слова")
+            1 -> {
+                val unlearnedWords = dictionary.filter { it.learned < 3 }
+
+                if (unlearnedWords.isNotEmpty()) {
+                    var learnedWords = listOf<Word>().filter { it.learned >= 3 }
+                    val selectedValues = unlearnedWords.shuffled().take(4)
+                    if (selectedValues.size < 4) learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
+
+                    val unlearnedWord = selectedValues.random().original
+                    println("Исходное слово: $unlearnedWord")
+
+                    val allWords = unlearnedWords + learnedWords
+                    allWords.forEachIndexed { index, value ->
+                        val number = index + 1
+                        println("${number}: ${value.translate}")
+                    }
+                } else {
+                    println("Вы выучили все слова")
+                    break
+                }
+            }
+
             2 -> println("Статистика: Выучено $correctAnswersCount из ${wordsFile.size} | ${correctAnswersPercent}%")
             0 -> break
             else -> println("Предупреждение! Вводить можно только 0, 1 или 2")
