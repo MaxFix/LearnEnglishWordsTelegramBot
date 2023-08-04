@@ -3,5 +3,5 @@ dog|собака|3
 cat|кошка|3
 snake|змея|3
 horse|лошадь|3
-mouse|мышь|1
-ball|мяч|0
+mouse|мышь|0
+ball|мяч|1

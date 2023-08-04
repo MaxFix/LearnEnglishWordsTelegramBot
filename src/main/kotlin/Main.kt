@@ -13,9 +13,10 @@ fun main(args: Array<String>) {
 
     fun saveDictionary(mutableList: MutableList<Word>) {
         val wordsFile1 = File("some_words.txt")
+        wordsFile1.writeText("")
         mutableList.forEach {
             val word = Word(original = it.original, translate = it.translate, learned = it.learned)
-            wordsFile1.writeText("${word.original}|${word.translate}|${word.learned}")
+            wordsFile1.appendText("${word.original}|${word.translate}|${word.learned}\n")
         }
     }
 
