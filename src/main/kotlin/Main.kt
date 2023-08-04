@@ -23,8 +23,8 @@ fun main(args: Array<String>) {
                     val selectedValues = mutableListOf<Word>()
                     unlearnedWords = unlearnedWords.shuffled()
 
-                    for (element in unlearnedWords) {
-                        selectedValues.add(element)
+                    unlearnedWords.take(4).forEach {
+                        selectedValues.add(it)
                     }
 
                     val unlearnedWord = selectedValues.random().original
@@ -39,6 +39,7 @@ fun main(args: Array<String>) {
                     break
                 }
             }
+
             2 -> println("Статистика: Выучено $correctAnswersCount из ${wordsFile.size} | ${correctAnswersPercent}%")
             0 -> break
             else -> println("Предупреждение! Вводить можно только 0, 1 или 2")
