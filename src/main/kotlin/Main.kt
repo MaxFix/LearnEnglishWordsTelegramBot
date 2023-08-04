@@ -12,34 +12,30 @@ fun main(args: Array<String>) {
     }
 
     while (true) {
-        val correctAnswersCount = dictionary.filter { (it.learned == 3) }.size
+        val correctAnswersCount = dictionary.filter { it.learned == 3 }.size
         val correctAnswersPercent = (correctAnswersCount * 100) / wordsFile.size
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
         when (readln().toInt()) {
             1 -> {
-                val unlearnedWords = dictionary.filter { it.learned != 3 }
+                var unlearnedWords = dictionary.filter { it.learned < 3 }
 
                 if (unlearnedWords.isNotEmpty()) {
-                    val unlearnedWord = unlearnedWords.random()
-                    val selectedValues = mutableListOf<String>()
+                    val selectedValues = mutableListOf<Word>()
+                    unlearnedWords = unlearnedWords.shuffled()
 
-                    println("Исходное слово: ${unlearnedWord.original}")
-
-                    while (selectedValues.size < 3) {
-                        val answer = unlearnedWords.random().translate
-                        if (answer != unlearnedWord.translate && answer !in selectedValues) {
-                            selectedValues.add(answer)
-                        }
+                    for (element in unlearnedWords) {
+                        selectedValues.add(element)
                     }
 
-                    selectedValues.add(unlearnedWord.translate)
-                    selectedValues.shuffle()
+                    val unlearnedWord = selectedValues.random().original
+                    println("Исходное слово: $unlearnedWord")
+
                     selectedValues.forEachIndexed { index, value ->
                         val number = index + 1
-                        println("Ответ ${number}: $value")
+                        println("${number}: ${value.translate}")
                     }
                 } else {
-                    println("Все слова выучены!")
+                    println("Вы выучили все слова")
                     break
                 }
             }
