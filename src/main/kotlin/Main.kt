@@ -42,7 +42,11 @@ fun main(args: Array<String>) {
                         val number = index + 1
                         println("${number}: ${value.translate}")
                     }
+                    println("0: Меню")
+
                     val userInput = readln().toInt()
+                    if (userInput == 0) continue
+
                     val answerIndex = allWords.indexOfFirst { it.original == unlearnedWord } + 1
                     if (userInput == answerIndex) {
                         println("Верно!")
