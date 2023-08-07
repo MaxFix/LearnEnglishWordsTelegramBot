@@ -1,6 +1,10 @@
 import java.io.File
 
+const val MAX_LEARNED_COUNTER = 3
+const val NUM_OF_SELECTED_WORDS = 4
+
 fun main(args: Array<String>) {
+
     val dictionary = mutableListOf<Word>()
     val wordsFile: List<String> = File("some_words.txt")
         .readLines()
@@ -11,28 +15,28 @@ fun main(args: Array<String>) {
         dictionary.add(word)
     }
 
-    fun saveDictionary(mutableList: MutableList<Word>) {
-        val wordsFile1 = File("some_words.txt")
-        wordsFile1.writeText("")
-        mutableList.forEach {
+    fun saveDictionary(dictionary: MutableList<Word>) {
+        val fileWithWordsDictionary = File("some_words.txt")
+        fileWithWordsDictionary.writeText("")
+        dictionary.forEach {
             val word = Word(original = it.original, translate = it.translate, learned = it.learned)
-            wordsFile1.appendText("${word.original}|${word.translate}|${word.learned}\n")
+            fileWithWordsDictionary.appendText("${word.original}|${word.translate}|${word.learned}\n")
         }
     }
 
     while (true) {
-        val correctAnswersCount = dictionary.filter { it.learned == 3 }.size
+        val correctAnswersCount = dictionary.filter { it.learned == MAX_LEARNED_COUNTER }.size
         val correctAnswersPercent = (correctAnswersCount * 100) / wordsFile.size
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
         when (readln().toInt()) {
             1 -> {
-                val unlearnedWords = dictionary.filter { it.learned < 3 }
+                val unlearnedWords = dictionary.filter { it.learned < MAX_LEARNED_COUNTER }
 
                 if (unlearnedWords.isNotEmpty()) {
-                    var learnedWords = dictionary.filter { it.learned >= 3 }
-                    val selectedValues = unlearnedWords.shuffled().take(4)
-                    if (selectedValues.size < 4) {
-                        learnedWords = learnedWords.shuffled().take(4 - selectedValues.size)
+                    var learnedWords = dictionary.filter { it.learned >= MAX_LEARNED_COUNTER }
+                    val selectedValues = unlearnedWords.shuffled().take(NUM_OF_SELECTED_WORDS)
+                    if (selectedValues.size < NUM_OF_SELECTED_WORDS) {
+                        learnedWords = learnedWords.shuffled().take(NUM_OF_SELECTED_WORDS - selectedValues.size)
                     }
 
                     val unlearnedWord = selectedValues.random().original
@@ -51,7 +55,7 @@ fun main(args: Array<String>) {
                     val answerIndex = allWords.indexOfFirst { it.original == unlearnedWord } + 1
                     if (userInput == answerIndex) {
                         println("Верно!")
-                        val selectedWord = dictionary.find { it.original == unlearnedWord }
+                        val selectedWord = allWords.find { it.original == unlearnedWord }
                         selectedWord?.learned = selectedWord?.learned?.plus(1)!!
                         saveDictionary(dictionary)
                     }
