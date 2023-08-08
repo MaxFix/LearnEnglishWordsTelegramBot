@@ -1,6 +1,20 @@
 const val MAX_LEARNED_COUNTER = 3
 const val NUM_OF_SELECTED_WORDS = 4
 
+data class Word(
+    val original: String,
+    val translate: String,
+    var learned: Int = 0,
+)
+
+fun questionToString(question: Question) {
+    val allWords = question.variants
+    allWords.forEachIndexed { index, value ->
+        println("${index + 1}: ${value.translate}")
+    }
+    println("0: Меню")
+}
+
 fun main(args: Array<String>) {
 
     val trainer = WordsTrainer()
@@ -15,12 +29,7 @@ fun main(args: Array<String>) {
                 if (question != null) {
                     println("Исходное слово: ${question.correctAnswer.original}")
 
-                    val allWords = question.variants
-                    allWords.forEachIndexed { index, value ->
-                        val number = index + 1
-                        println("${number}: ${value.translate}")
-                    }
-                    println("0: Меню")
+                    questionToString(question)
 
                     val userInput = readln().toIntOrNull()
                     if (userInput == 0) continue
@@ -49,9 +58,3 @@ fun main(args: Array<String>) {
         }
     }
 }
-
-data class Word(
-    val original: String,
-    val translate: String,
-    var learned: Int = 0,
-)
