@@ -7,8 +7,8 @@ data class Word(
     var learned: Int = 0,
 )
 
-fun questionToString(question: Question) {
-    val allWords = question.variants
+fun Question.asConsoleString() {
+    val allWords = this.variants
     allWords.forEachIndexed { index, value ->
         println("${index + 1}: ${value.translate}")
     }
@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
                 if (question != null) {
                     println("Исходное слово: ${question.correctAnswer.original}")
 
-                    questionToString(question)
+                    question.asConsoleString()
 
                     val userInput = readln().toIntOrNull()
                     if (userInput == 0) continue

@@ -17,26 +17,6 @@ class WordsTrainer {
     private val dictionary = loadDictionary()
     private val wordsFile = File("some_words.txt")
 
-    private fun loadDictionary(): List<Word> {
-        val wordsFile = File("some_words.txt").readLines()
-        val dictionary = mutableListOf<Word>()
-
-        wordsFile.forEach {
-            val line = it.split("|")
-            val word = Word(original = line[0], translate = line[1], learned = line[2].toInt())
-            dictionary.add(word)
-        }
-        return dictionary
-    }
-
-    private fun saveDictionary(dictionary: List<Word>) {
-        wordsFile.writeText("")
-        dictionary.forEach {
-            val word = Word(original = it.original, translate = it.translate, learned = it.learned)
-            wordsFile.appendText("${word.original}|${word.translate}|${word.learned}\n")
-        }
-    }
-
     fun getStatistics(): Statistics {
         val correctAnswersCount = dictionary.filter { it.learned == MAX_LEARNED_COUNTER }.size
         val totalAnswers = dictionary.size
@@ -79,5 +59,25 @@ class WordsTrainer {
                 false
             }
         } ?: false
+    }
+
+    private fun loadDictionary(): List<Word> {
+        val wordsFile = File("some_words.txt").readLines()
+        val dictionary = mutableListOf<Word>()
+
+        wordsFile.forEach {
+            val line = it.split("|")
+            val word = Word(original = line[0], translate = line[1], learned = line[2].toInt())
+            dictionary.add(word)
+        }
+        return dictionary
+    }
+
+    private fun saveDictionary(dictionary: List<Word>) {
+        wordsFile.writeText("")
+        dictionary.forEach {
+            val word = Word(original = it.original, translate = it.translate, learned = it.learned)
+            wordsFile.appendText("${word.original}|${word.translate}|${word.learned}\n")
+        }
     }
 }
