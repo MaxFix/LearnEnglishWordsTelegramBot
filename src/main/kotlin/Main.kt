@@ -22,10 +22,10 @@ fun main(args: Array<String>) {
                     }
                     println("0: Меню")
 
-                    val userInput = readln().toInt()
+                    val userInput = readln().toIntOrNull()
                     if (userInput == 0) continue
 
-                    if (trainer.checkAnswer(userInput.minus(1))) {
+                    if (trainer.checkAnswer(userInput?.minus(1))) {
                         println("Верно!")
                     } else {
                         println("Неправильно! ${question.correctAnswer.original} - это ${question.correctAnswer.translate}")

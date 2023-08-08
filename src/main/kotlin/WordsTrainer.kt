@@ -59,20 +59,20 @@ class WordsTrainer {
         }
 
         val unlearnedWord = selectedValues.random()
-
-        return Question(
+        question = Question(
             variants = unlearnedWords + learnedWords,
             correctAnswer = unlearnedWord,
         )
+
+        return question
     }
 
-    fun checkAnswer(userAnswer: Int?): Boolean {
-        return question?.let { it ->
+    fun checkAnswer(userAnswerIndex: Int?): Boolean {
+        return question?.let {
             val answerIndex = it.variants.indexOf(it.correctAnswer)
 
-            if (userAnswer == answerIndex) {
-                val selectedWord = it.variants.find { it.original == getNextQuestion()?.correctAnswer?.original }
-                selectedWord?.learned = selectedWord?.learned?.plus(1)!!
+            if (userAnswerIndex == answerIndex) {
+                it.correctAnswer.learned++
                 saveDictionary(dictionary)
                 true
             } else {
