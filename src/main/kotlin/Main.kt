@@ -1,3 +1,5 @@
+import java.lang.Exception
+
 const val MAX_LEARNED_COUNTER = 3
 const val NUM_OF_SELECTED_WORDS = 4
 
@@ -17,12 +19,17 @@ fun Question.asConsoleString() {
 
 fun main(args: Array<String>) {
 
-    val trainer = WordsTrainer()
+    val trainer =  try {
+        WordsTrainer()
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь")
+        return
+    }
 
     while (true) {
 
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
-        when (readln().toInt()) {
+        when (readln().toIntOrNull()) {
             1 -> {
                 val question = trainer.getNextQuestion()
 

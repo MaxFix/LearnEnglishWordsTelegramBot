@@ -1,4 +1,6 @@
 import java.io.File
+import java.lang.IllegalStateException
+import java.lang.IndexOutOfBoundsException
 
 data class Statistics(
     val correctAnswersCount: Int,
@@ -62,15 +64,19 @@ class WordsTrainer {
     }
 
     private fun loadDictionary(): List<Word> {
-        val wordsFile = File("some_words.txt").readLines()
-        val dictionary = mutableListOf<Word>()
+        try {
+            val wordsFile = File("some_words.txt").readLines()
+            val dictionary = mutableListOf<Word>()
 
-        wordsFile.forEach {
-            val line = it.split("|")
-            val word = Word(original = line[0], translate = line[1], learned = line[2].toInt())
-            dictionary.add(word)
+            wordsFile.forEach {
+                val line = it.split("|")
+                val word = Word(original = line[0], translate = line[1], learned = line[2].toInt())
+                dictionary.add(word)
+            }
+            return dictionary
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalStateException("Файл с некорректными данными или пустой")
         }
-        return dictionary
     }
 
     private fun saveDictionary(dictionary: List<Word>) {
