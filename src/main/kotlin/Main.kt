@@ -19,7 +19,7 @@ fun Question.asConsoleString() {
 
 fun main(args: Array<String>) {
 
-    val trainer =  try {
+    val trainer = try {
         WordsTrainer()
     } catch (e: Exception) {
         println("Невозможно загрузить словарь")
@@ -31,24 +31,26 @@ fun main(args: Array<String>) {
         println("Введите 1 - Учить слова, 2 - Статистика, 0 - Выход")
         when (readln().toIntOrNull()) {
             1 -> {
-                val question = trainer.getNextQuestion()
+                while (true) {
+                    val question = trainer.getNextQuestion()
 
-                if (question != null) {
-                    println("Исходное слово: ${question.correctAnswer.original}")
+                    if (question != null) {
+                        println("Исходное слово: ${question.correctAnswer.original}")
 
-                    question.asConsoleString()
+                        question.asConsoleString()
 
-                    val userInput = readln().toIntOrNull()
-                    if (userInput == 0) continue
+                        val userInput = readln().toIntOrNull()
+                        if (userInput == 0) continue
 
-                    if (trainer.checkAnswer(userInput?.minus(1))) {
-                        println("Верно!")
+                        if (trainer.checkAnswer(userInput?.minus(1))) {
+                            println("Верно!")
+                        } else {
+                            println("Неправильно! ${question.correctAnswer.original} - это ${question.correctAnswer.translate}")
+                        }
                     } else {
-                        println("Неправильно! ${question.correctAnswer.original} - это ${question.correctAnswer.translate}")
+                        println("Вы выучили все слова")
+                        break
                     }
-                } else {
-                    println("Вы выучили все слова")
-                    break
                 }
             }
 

@@ -13,11 +13,12 @@ data class Question(
     val correctAnswer: Word,
 )
 
-class WordsTrainer {
-
-    private var question: Question? = null
+class WordsTrainer(
+    private val wordsFile: File = File("some_words.txt"),
+    private var question: Question? = null,
+) {
     private val dictionary = loadDictionary()
-    private val wordsFile = File("some_words.txt")
+
 
     fun getStatistics(): Statistics {
         val correctAnswersCount = dictionary.filter { it.learned == MAX_LEARNED_COUNTER }.size
@@ -34,10 +35,10 @@ class WordsTrainer {
         var learnedWords = dictionary.filter { it.learned >= MAX_LEARNED_COUNTER }
         val unlearnedWords = dictionary.filter { it.learned < MAX_LEARNED_COUNTER }
         if (unlearnedWords.isEmpty()) return null
-        val selectedValues = unlearnedWords.shuffled().take(NUM_OF_SELECTED_WORDS)
+        val selectedValues = unlearnedWords.take(NUM_OF_SELECTED_WORDS).shuffled()
 
         if (selectedValues.size < NUM_OF_SELECTED_WORDS) {
-            learnedWords = learnedWords.shuffled().take(NUM_OF_SELECTED_WORDS - selectedValues.size)
+            learnedWords = learnedWords.take(NUM_OF_SELECTED_WORDS - selectedValues.size).shuffled()
         }
 
         val unlearnedWord = selectedValues.random()
