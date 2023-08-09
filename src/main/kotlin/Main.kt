@@ -1,8 +1,5 @@
 import java.lang.Exception
 
-const val MAX_LEARNED_COUNTER = 3
-const val NUM_OF_SELECTED_WORDS = 4
-
 data class Word(
     val original: String,
     val translate: String,

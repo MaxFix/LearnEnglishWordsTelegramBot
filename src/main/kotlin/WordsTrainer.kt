@@ -16,12 +16,14 @@ data class Question(
 class WordsTrainer(
     private val wordsFile: File = File("some_words.txt"),
     private var question: Question? = null,
+    private val maxLearnedCounter: Int = 3,
+    private val numberOfSelectedWords: Int = 4,
 ) {
     private val dictionary = loadDictionary()
 
 
     fun getStatistics(): Statistics {
-        val correctAnswersCount = dictionary.filter { it.learned == MAX_LEARNED_COUNTER }.size
+        val correctAnswersCount = dictionary.filter { it.learned == maxLearnedCounter }.size
         val totalAnswers = dictionary.size
         val correctAnswersPercent = (correctAnswersCount * 100) / totalAnswers
         return Statistics(
@@ -32,13 +34,13 @@ class WordsTrainer(
     }
 
     fun getNextQuestion(): Question? {
-        var learnedWords = dictionary.filter { it.learned >= MAX_LEARNED_COUNTER }
-        val unlearnedWords = dictionary.filter { it.learned < MAX_LEARNED_COUNTER }
+        var learnedWords = dictionary.filter { it.learned >= maxLearnedCounter }
+        val unlearnedWords = dictionary.filter { it.learned < maxLearnedCounter }
         if (unlearnedWords.isEmpty()) return null
-        val selectedValues = unlearnedWords.take(NUM_OF_SELECTED_WORDS).shuffled()
+        val selectedValues = unlearnedWords.take(numberOfSelectedWords).shuffled()
 
-        if (selectedValues.size < NUM_OF_SELECTED_WORDS) {
-            learnedWords = learnedWords.take(NUM_OF_SELECTED_WORDS - selectedValues.size).shuffled()
+        if (selectedValues.size < numberOfSelectedWords) {
+            learnedWords = learnedWords.take(numberOfSelectedWords - selectedValues.size).shuffled()
         }
 
         val unlearnedWord = selectedValues.random()
