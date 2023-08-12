@@ -54,14 +54,12 @@ fun getUpdates(botToken: String, updateId: Int): String {
 
 
 fun sendMessage(botToken: String, chatId: Int, message: String): String {
-    val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
-    val requestBodyString = "chat_id=$chatId&text=$message"
+    val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=$message"
 
     val client: HttpClient = HttpClient.newBuilder().build()
     val request = HttpRequest
         .newBuilder()
         .uri(URI.create(urlSendMessage))
-        .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
         .build()
     val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
