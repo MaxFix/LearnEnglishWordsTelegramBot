@@ -3,13 +3,13 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
+const val WELCOME_TEXT = "Hello"
+
 fun main(args: Array<String>) {
 
     val botToken = args[0]
     var updateId = 0
     var chatId = 0
-    var text = ""
-
 
     while (true) {
         Thread.sleep(1000)
@@ -31,14 +31,9 @@ fun main(args: Array<String>) {
             chatId = matchResultChatId.groupValues[1].toInt()
         }
 
-        if (matchResultText != null) {
-            text = matchResultText.groupValues[1]
+        if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
+            sendMessage(botToken, chatId, WELCOME_TEXT)
         }
-
-        if (text.lowercase() == "hello") {
-            sendMessage(botToken, chatId, "Hello")
-        }
-
     }
 }
 
