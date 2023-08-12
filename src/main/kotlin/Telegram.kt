@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
 
         val regexUpdateId = "\"update_id\":(.+?),".toRegex()
         val regexChatId = "\"chat\":\\{\"id\":(.+?),".toRegex()
-        val regexText = "\"text\":(.+?)}".toRegex()
+        val regexText = "\"text\":\"(.+?)\"".toRegex()
 
         val matchResultUpdateId = regexUpdateId.find(updates)
         val matchResultChatId = regexChatId.find(updates)
@@ -55,9 +55,8 @@ fun getUpdates(botToken: String, updateId: Int): String {
 
 fun sendMessage(botToken: String, chatId: Int, message: String): String {
     val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
+    val requestBodyString = "chat_id=$chatId&text=$message"
 
-    val requestBody = mapOf("chat_id" to chatId, "text" to message)
-    val requestBodyString = requestBody.entries.joinToString("&") { "${it.key}=${it.value}" }
     val client: HttpClient = HttpClient.newBuilder().build()
     val request = HttpRequest
         .newBuilder()
