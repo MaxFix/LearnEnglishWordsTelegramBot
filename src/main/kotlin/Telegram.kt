@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
         val updates: String = getUpdates(botToken, updateId)
         println(updates)
 
-        val regex = """^(?:"update_id":\s)(\d+)(?:,)""".toRegex()
+        val regex = "\"update_id\":(.+?),".toRegex()
         val matchResult = regex.find(updates)
         if (matchResult != null) {
             updateId = matchResult.groupValues[1].toInt() + 1
