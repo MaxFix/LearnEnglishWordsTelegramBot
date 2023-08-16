@@ -15,7 +15,7 @@ data class Question(
 
 class WordsTrainer(
     private val wordsFile: File = File("some_words.txt"),
-    private var question: Question? = null,
+    var question: Question? = null,
     private val maxLearnedCounter: Int = 3,
     private val numberOfSelectedWords: Int = 4,
 ) {
