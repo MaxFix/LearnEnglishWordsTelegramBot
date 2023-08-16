@@ -39,8 +39,9 @@ class TelegramBotService {
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         return response.body()
+    }
 
-    }    fun sendMenu(botToken: String, chatId: Int, ): String {
+    fun sendMenu(botToken: String, chatId: Int): String {
         val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
         val sendMenuBody = """
             {
@@ -82,36 +83,25 @@ class TelegramBotService {
                 {
                 "chat_id": $chatId,
                 "text": "${question.correctAnswer.original}",
+                "callback_data: "question",
                 "reply_markup": {
                 "inline_keyboard": [
                             [
                             {
-                                ${allWords.forEachIndexed { index, value ->
-                                "text: ${value.translate},\t"
-                                "callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index + 1}"
-                                }
-                                }
+                                ${allWords.forEachIndexed { index, word ->
+                                    "text: $word," + 
+                                            "\"callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index}"  
+                                }}",
+                                
                             },
                             {
-                                ${allWords.forEachIndexed { index, value ->
-                                "text: ${value.translate},\t"
-                                "callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index + 1}"
-                            }
-                            }
+                                answer_2
                             },
                             {
-                                ${allWords.forEachIndexed { index, value ->
-                                "text: ${value.translate},\t"
-                                "callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index + 1}"
-                            }
-                            }
+                                answer_3
                             },
                             {
-                                ${allWords.forEachIndexed { index, value ->
-                                "text: ${value.translate},\t"
-                                "callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index + 1}"
-                            }
-                            }
+                                answer_4
                             }
                             ]
                         ]

@@ -33,7 +33,7 @@ class WordsTrainer(
         )
     }
 
-    fun getNextQuestion(): Question? {
+    fun createAndGetNextQuestion(): Question? {
         var learnedWords = dictionary.filter { it.learned >= maxLearnedCounter }
         val unlearnedWords = dictionary.filter { it.learned < maxLearnedCounter }
         if (unlearnedWords.isEmpty()) return null

@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
         when (readln().toIntOrNull()) {
             1 -> {
                 while (true) {
-                    val question = trainer.getNextQuestion()
+                    val question = trainer.createAndGetNextQuestion()
 
                     if (question != null) {
                         println("Исходное слово: ${question.correctAnswer.original}")

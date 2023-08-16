@@ -1,5 +1,3 @@
-import kotlin.coroutines.suspendCoroutine
-
 const val WELCOME_TEXT = "Hello"
 const val MENU_TEXT = "/start"
 const val STATISTICS_TEXT = "statistics_clicked"
@@ -37,14 +35,13 @@ fun main(args: Array<String>) {
         if (matchResultChatId != null) {
             chatId = matchResultChatId.groupValues[1].toInt()
         }
-        if (matchResultData != null) {
-            data = matchResultData.groupValues[1]
-        }
+
+        data = matchResultData?.groupValues?.getOrNull(1).toString()
 
         if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
             botService.sendMessage(botToken, chatId, WELCOME_TEXT)
         }
-        if (matchResultText != null && matchResultText.groupValues[1] == MENU_TEXT.lowercase()) {
+        if (data == MENU_TEXT.lowercase()) {
             botService.sendMenu(botToken, chatId)
         }
         if (matchResultData != null && matchResultData.groupValues[1] == STATISTICS_TEXT.lowercase()) {
@@ -68,15 +65,10 @@ fun main(args: Array<String>) {
 
 fun checkNextQuestionAndSend(trainer: WordsTrainer, botToken: String, chatId: Int) {
     val botService = TelegramBotService()
-    if (trainer.getNextQuestion() != null) {
-        trainer.getNextQuestion()?.let { botService.sendQuestionToUser(botToken, chatId, it) }
+    val createAndGetQuestion = trainer.createAndGetNextQuestion()
+    if (createAndGetQuestion != null) {
+        createAndGetQuestion.let { botService.sendQuestionToUser(botToken, chatId, it) }
     } else {
         println("Вы выучили все слова в базе")
     }
 }
-
-
-
-
-
-
