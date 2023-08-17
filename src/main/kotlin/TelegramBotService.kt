@@ -88,7 +88,7 @@ class TelegramBotService {
                 "inline_keyboard": [
                          [
                             ${allWords.mapIndexed { index, answer ->
-                            "[{\"text\": \"$answer\", \"callback_data\": \"answer_$index\"}]"
+                            "[{\"text\": \"$answer\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}]"
                             }.joinToString(",")}
                             ]
                         ]

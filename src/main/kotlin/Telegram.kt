@@ -65,10 +65,7 @@ fun main(args: Array<String>) {
 
 fun checkNextQuestionAndSend(trainer: WordsTrainer, botToken: String, chatId: Int) {
     val botService = TelegramBotService()
-    val createAndGetQuestion = trainer.createAndGetNextQuestion()
-    if (createAndGetQuestion != null) {
-        createAndGetQuestion.let { botService.sendQuestionToUser(botToken, chatId, it) }
-    } else {
-        println("Вы выучили все слова в базе")
-    }
+    if (trainer.question != null) {
+        trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(botToken, chatId, it) }
+    } else println("Вы выучили все слова в базе")
 }
