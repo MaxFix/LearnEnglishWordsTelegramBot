@@ -9,12 +9,11 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     var updateId = 0
     var chatId = 0
-    var data = ""
 
     val regexUpdateId = "\"update_id\":(.+?),".toRegex()
     val regexChatId = "\"chat\":\\{\"id\":(.+?),".toRegex()
-    val regexText = "\"text\":\"(.+?)\"".toRegex()
-    val regexData = "\"data\":\"(.+?)\"".toRegex()
+    val regexText = "\"text\":(.+?)".toRegex()
+    val regexData = "\"data\":(.+?)".toRegex()
 
     val trainer = WordsTrainer()
     val statistics = trainer.getStatistics()
@@ -36,12 +35,13 @@ fun main(args: Array<String>) {
             chatId = matchResultChatId.groupValues[1].toInt()
         }
 
-        data = matchResultData?.groupValues?.getOrNull(1).toString()
+        val text = matchResultText?.groupValues?.getOrNull(0)
+        val data = matchResultData?.groupValues?.getOrNull(0)
 
         if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
             botService.sendMessage(botToken, chatId, WELCOME_TEXT)
         }
-        if (data == MENU_TEXT.lowercase()) {
+        if (text == MENU_TEXT.lowercase()) {
             botService.sendMenu(botToken, chatId)
         }
         if (matchResultData != null && matchResultData.groupValues[1] == STATISTICS_TEXT.lowercase()) {
@@ -51,7 +51,7 @@ fun main(args: Array<String>) {
         if (matchResultData != null && matchResultData.groupValues[1] == LEARN_WORD_TEXT.lowercase()) {
             checkNextQuestionAndSend(trainer, botToken, chatId)
         }
-        if (data.startsWith(CALLBACK_DATA_ANSWER_PREFIX)) {
+        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
             val answerNumber = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if(trainer.checkAnswer(answerNumber)) {
                 println("Правильно!")

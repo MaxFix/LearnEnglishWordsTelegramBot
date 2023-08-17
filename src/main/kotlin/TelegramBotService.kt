@@ -83,26 +83,13 @@ class TelegramBotService {
                 {
                 "chat_id": $chatId,
                 "text": "${question.correctAnswer.original}",
-                "callback_data: "question",
+                "callback_data": "question",
                 "reply_markup": {
                 "inline_keyboard": [
-                            [
-                            {
-                                ${allWords.forEachIndexed { index, word ->
-                                    "text: $word," + 
-                                            "\"callback_data: ${CALLBACK_DATA_ANSWER_PREFIX + index}"  
-                                }}",
-                                
-                            },
-                            {
-                                answer_2
-                            },
-                            {
-                                answer_3
-                            },
-                            {
-                                answer_4
-                            }
+                         [
+                            ${allWords.mapIndexed { index, answer ->
+                            "[{\"text\": \"$answer\", \"callback_data\": \"answer_$index\"}]"
+                            }.joinToString(",")}
                             ]
                         ]
                     }
