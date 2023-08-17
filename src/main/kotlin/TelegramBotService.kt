@@ -6,11 +6,14 @@ import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
+const val API_TELEGRAM = "https://api.telegram.org/bot"
 
-class TelegramBotService {
+class TelegramBotService(
+    private val botToken: String,
+) {
 
     fun getUpdates(botToken: String, updateId: Int): String {
-        val urlUpdate = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
+        val urlUpdate = "$API_TELEGRAM${this.botToken}/getUpdates?offset=$updateId"
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
@@ -29,7 +32,7 @@ class TelegramBotService {
         )
         println(encoded)
 
-        val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=$encoded"
+        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage?chat_id=$chatId&text=$encoded"
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
@@ -42,7 +45,7 @@ class TelegramBotService {
     }
 
     fun sendMenu(botToken: String, chatId: Int): String {
-        val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
+        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
         val sendMenuBody = """
             {
             	"chat_id": $chatId,
@@ -77,7 +80,7 @@ class TelegramBotService {
     }
 
     fun sendQuestionToUser(botToken: String, chatId: Int, question: Question): String {
-        val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
+        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
         val allWords = question.variants
         val sendQuestionBody = """
                 {
@@ -86,12 +89,17 @@ class TelegramBotService {
                 "callback_data": "question",
                 "reply_markup": {
                 "inline_keyboard": [
-                         [
                             ${
             allWords.mapIndexed { index, answer ->
-                "{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}"
+                "[{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}]"
             }.joinToString(",")
         }
+        
+        ,[
+                {
+                "text": "Выйти",
+            	"callback_data": "exit_btn"
+                }
                             ]
                         ]
                     }

@@ -2,10 +2,12 @@ const val WELCOME_TEXT = "Hello"
 const val MENU_TEXT = "/start"
 const val STATISTICS_TEXT = "statistics_clicked"
 const val LEARN_WORD_TEXT = "learn_words_clicked"
+const val EXIT_BTN = "exit_btn"
+private const val botToken = "5902907319:AAFb-XNI2kqZeQ1HN4zjJNAIgvq_mtjOXLA"
 
 fun main(args: Array<String>) {
 
-    val botService = TelegramBotService()
+    val botService = TelegramBotService(botToken)
     val botToken = args[0]
     var updateId = 0
     var chatId = 0
@@ -44,7 +46,7 @@ fun main(args: Array<String>) {
         if (text == MENU_TEXT.lowercase()) {
             botService.sendMenu(botToken, chatId)
         }
-        if (matchResultData != null && matchResultData.groupValues[1] == STATISTICS_TEXT.lowercase()) {
+        if (matchResultData != null && data == STATISTICS_TEXT.lowercase()) {
             botService.sendMessage(
                 botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
                         "${statistics.totalAnswers} | ${statistics.percent}%"
@@ -66,11 +68,14 @@ fun main(args: Array<String>) {
             }
             checkNextQuestionAndSend(trainer, botToken, chatId)
         }
+        if (data == EXIT_BTN.lowercase()) {
+            botService.sendMenu(botToken, chatId)
+        }
     }
 }
 
 fun checkNextQuestionAndSend(trainer: WordsTrainer, botToken: String, chatId: Int) {
-    val botService = TelegramBotService()
+    val botService = TelegramBotService(botToken)
     val question = trainer.createAndGetNextQuestion()?.variants
     if (question != null) {
         trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(botToken, chatId, it) }

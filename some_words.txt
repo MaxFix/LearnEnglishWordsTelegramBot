@@ -1,7 +1,7 @@
 hello|привет|3
 dog|собака|3
-cat|кошка|0
+cat|кошка|3
 snake|змея|3
-horse|лошадь|0
-mouse|мышь|2
-ball|мяч|1
+horse|лошадь|3
+mouse|мышь|3
+ball|мяч|3
