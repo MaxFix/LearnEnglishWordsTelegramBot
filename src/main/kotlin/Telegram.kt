@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     val regexUpdateId = "\"update_id\":(.+?),".toRegex()
     val regexChatId = "\"chat\":\\{\"id\":(.+?),".toRegex()
     val regexText = "\"text\":\"(.+?)\"".toRegex()
-    val regexData = "\"data\":(.+?)".toRegex()
+    val regexData = "\"data\":\"(.+?)\"".toRegex()
 
     val trainer = WordsTrainer()
     val statistics = trainer.getStatistics()
