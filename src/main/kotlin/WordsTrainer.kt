@@ -47,7 +47,7 @@ class WordsTrainer(
         val allVariants = (unlearnedWords + learnedWords).take(4)
 
         question = Question(
-            variants =  allVariants,
+            variants = allVariants,
             correctAnswer = unlearnedWord,
         )
 
