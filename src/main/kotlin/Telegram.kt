@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
         }
 
         val text = matchResultText?.groupValues?.getOrNull(1)
-        val data = matchResultData?.groupValues?.getOrNull(0)
+        val data = matchResultData?.groupValues?.getOrNull(1)
 
         if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
             botService.sendMessage(botToken, chatId, WELCOME_TEXT)
@@ -54,9 +54,11 @@ fun main(args: Array<String>) {
         if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
             val answerNumber = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if(trainer.checkAnswer(answerNumber)) {
-                println("Правильно!")
+                botService.sendMessage(botToken, chatId, "Правильно!")
             } else {
-                println("Не правильно: ${trainer.question?.correctAnswer?.original} - ${trainer.question?.correctAnswer?.translate}")
+                botService.sendMessage(botToken, chatId,
+                    "Не правильно: ${trainer.question?.correctAnswer?.original} - " +
+                            "${trainer.question?.correctAnswer?.translate}")
             }
             checkNextQuestionAndSend(trainer, botToken, chatId)
         }
@@ -68,5 +70,7 @@ fun checkNextQuestionAndSend(trainer: WordsTrainer, botToken: String, chatId: In
     val question = trainer.createAndGetNextQuestion()?.variants
     if (question != null) {
         trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(botToken, chatId, it) }
-    } else println("Вы выучили все слова в базе")
+    } else {
+        botService.sendMessage(botToken, chatId, "Вы выучили все слова!")
+    }
 }
