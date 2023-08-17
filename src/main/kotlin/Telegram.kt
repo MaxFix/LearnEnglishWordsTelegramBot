@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     val regexUpdateId = "\"update_id\":(.+?),".toRegex()
     val regexChatId = "\"chat\":\\{\"id\":(.+?),".toRegex()
-    val regexText = "\"text\":(.+?)".toRegex()
+    val regexText = "\"text\":\"(.+?)\"".toRegex()
     val regexData = "\"data\":(.+?)".toRegex()
 
     val trainer = WordsTrainer()
@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
             chatId = matchResultChatId.groupValues[1].toInt()
         }
 
-        val text = matchResultText?.groupValues?.getOrNull(0)
+        val text = matchResultText?.groupValues?.getOrNull(1)
         val data = matchResultData?.groupValues?.getOrNull(0)
 
         if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
