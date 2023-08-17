@@ -87,9 +87,11 @@ class TelegramBotService {
                 "reply_markup": {
                 "inline_keyboard": [
                          [
-                            ${allWords.mapIndexed { index, answer ->
-                            "{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}"
-                            }.joinToString(",")}
+                            ${
+            allWords.mapIndexed { index, answer ->
+                "{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}"
+            }.joinToString(",")
+        }
                             ]
                         ]
                     }

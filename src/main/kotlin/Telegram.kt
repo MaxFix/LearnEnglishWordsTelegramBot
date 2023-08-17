@@ -45,20 +45,24 @@ fun main(args: Array<String>) {
             botService.sendMenu(botToken, chatId)
         }
         if (matchResultData != null && matchResultData.groupValues[1] == STATISTICS_TEXT.lowercase()) {
-            botService.sendMessage(botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
-                    "${statistics.totalAnswers} | ${statistics.percent}%")
+            botService.sendMessage(
+                botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
+                        "${statistics.totalAnswers} | ${statistics.percent}%"
+            )
         }
         if (matchResultData != null && matchResultData.groupValues[1] == LEARN_WORD_TEXT.lowercase()) {
             checkNextQuestionAndSend(trainer, botToken, chatId)
         }
         if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
             val answerNumber = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
-            if(trainer.checkAnswer(answerNumber)) {
+            if (trainer.checkAnswer(answerNumber)) {
                 botService.sendMessage(botToken, chatId, "Правильно!")
             } else {
-                botService.sendMessage(botToken, chatId,
+                botService.sendMessage(
+                    botToken, chatId,
                     "Не правильно: ${trainer.question?.correctAnswer?.original} - " +
-                            "${trainer.question?.correctAnswer?.translate}")
+                            "${trainer.question?.correctAnswer?.translate}"
+                )
             }
             checkNextQuestionAndSend(trainer, botToken, chatId)
         }
