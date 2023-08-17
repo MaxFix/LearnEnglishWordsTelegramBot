@@ -88,13 +88,15 @@ class TelegramBotService {
                 "inline_keyboard": [
                          [
                             ${allWords.mapIndexed { index, answer ->
-                            "[{\"text\": \"$answer\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}]"
+                            "[{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}]"
                             }.joinToString(",")}
                             ]
                         ]
                     }
                 }
             """.trimIndent()
+
+        println(sendQuestionBody)
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
