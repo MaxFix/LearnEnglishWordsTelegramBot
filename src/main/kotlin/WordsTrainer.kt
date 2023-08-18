@@ -15,7 +15,7 @@ data class Question(
 
 class WordsTrainer(
     private val wordsFile: File = File("some_words.txt"),
-    private var question: Question? = null,
+    var question: Question? = null,
     private val maxLearnedCounter: Int = 3,
     private val numberOfSelectedWords: Int = 4,
 ) {
@@ -33,7 +33,7 @@ class WordsTrainer(
         )
     }
 
-    fun getNextQuestion(): Question? {
+    fun createAndGetNextQuestion(): Question? {
         var learnedWords = dictionary.filter { it.learned >= maxLearnedCounter }
         val unlearnedWords = dictionary.filter { it.learned < maxLearnedCounter }
         if (unlearnedWords.isEmpty()) return null
@@ -44,8 +44,10 @@ class WordsTrainer(
         }
 
         val unlearnedWord = selectedValues.random()
+        val allVariants = (unlearnedWords + learnedWords).take(4)
+
         question = Question(
-            variants = unlearnedWords + learnedWords,
+            variants = allVariants,
             correctAnswer = unlearnedWord,
         )
 
