@@ -59,7 +59,7 @@ fun main(args: Array<String>) {
 
     while (true) {
         Thread.sleep(1000)
-        val responseString: String = TelegramBotService(botToken).getUpdates(botToken, lastUpdateId)
+        val responseString: String = TelegramBotService(botToken,json).getUpdates(lastUpdateId)
         println(responseString)
         val response: Response = json.decodeFromString(responseString)
         val updates = response.result
@@ -72,8 +72,7 @@ fun main(args: Array<String>) {
 
 fun handleUpdate(update: Update, json: Json, botToken: String, trainers: HashMap<Long, WordsTrainer>) {
 
-    val botService = TelegramBotService(botToken)
-
+    val botService = TelegramBotService(botToken,json)
     val message = update.message?.text
     val chatId = update.message?.chat?.id ?: update.callbackQuery?.message?.chat?.id ?: return
     val data = update.callbackQuery?.data
@@ -83,46 +82,36 @@ fun handleUpdate(update: Update, json: Json, botToken: String, trainers: HashMap
     val statistics = trainer.getStatistics()
 
     if (message?.lowercase() == MENU_TEXT) {
-        botService.sendMenu(json, botToken, chatId)
+        botService.sendMenu(chatId)
     }
     if (data == STATISTICS_TEXT.lowercase()) {
         botService.sendMessage(
-            json, botToken, chatId,
+            chatId,
             "Статистика: Выучено ${statistics.correctAnswersCount} из ${statistics.totalAnswers} | ${statistics.percent}%"
         )
     }
     if (data == LEARN_WORD_TEXT) {
-        checkNextQuestionAndSend(json, trainer, botToken, chatId)
+        botService.checkNextQuestionAndSend(trainer, chatId)
     }
     if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
         val answerNumber = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
         if (trainer.checkAnswer(answerNumber)) {
-            botService.sendMessage(json, botToken, chatId, "Правильно!")
+            botService.sendMessage(chatId, "Правильно!")
         } else {
             botService.sendMessage(
-                json, botToken, chatId,
+                chatId,
                 "Не правильно: ${trainer.question?.correctAnswer?.original} - " +
                         "${trainer.question?.correctAnswer?.translate}"
             )
         }
-        checkNextQuestionAndSend(json, trainer, botToken, chatId)
+        TelegramBotService(botToken,json).checkNextQuestionAndSend(trainer, chatId)
     }
     if (data == EXIT_BTN.lowercase()) {
-        botService.sendMenu(json, botToken, chatId)
+        botService.sendMenu(chatId)
     }
 
     if (data == RESET_CLICKED) {
         trainer.resetProgress()
-        botService.sendMessage(json, botToken, chatId, "Прогресс сброшен")
-    }
-}
-
-fun checkNextQuestionAndSend(json: Json, trainer: WordsTrainer, botToken: String, chatId: Long) {
-    val botService = TelegramBotService(botToken)
-    val question = trainer.createAndGetNextQuestion()?.variants
-    if (question != null) {
-        trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(json, botToken, chatId, it) }
-    } else {
-        botService.sendMessage(json, botToken, chatId, "Вы выучили все слова!")
+        botService.sendMessage(chatId, "Прогресс сброшен")
     }
 }

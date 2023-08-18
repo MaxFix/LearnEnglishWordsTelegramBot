@@ -36,10 +36,12 @@ data class InlineKeyBoard(
 
 class TelegramBotService(
     private val botToken: String,
-) {
+    val json: Json,
 
-    fun getUpdates(botToken: String, updateId: Long): String {
-        val urlUpdate = "$API_TELEGRAM${this.botToken}/getUpdates?offset=$updateId"
+    ) {
+
+    fun getUpdates(updateId: Long): String {
+        val urlUpdate = "$API_TELEGRAM${botToken}/getUpdates?offset=$updateId"
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
@@ -51,9 +53,9 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendMessage(json: Json, botToken: String, chatId: Long, message: String): String {
+    fun sendMessage(chatId: Long, message: String): String {
 
-        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
+        val urlSendMessage = "$API_TELEGRAM${botToken}/sendMessage"
         val requestBody = SendMessageRequest(
             chatId = chatId,
             text = message,
@@ -70,7 +72,7 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendMenu(json: Json, botToken: String, chatId: Long): String {
+    fun sendMenu(chatId: Long): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
 
         val requestBody = SendMessageRequest(
@@ -102,7 +104,7 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendQuestionToUser(json: Json, botToken: String, chatId: Long, question: Question): String {
+    fun sendQuestionToUser(chatId: Long, question: Question): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
         val questionVariants = question.variants.mapIndexed{ index, word ->
             InlineKeyBoard(
@@ -130,5 +132,14 @@ class TelegramBotService(
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         return response.body()
+    }
+
+    fun checkNextQuestionAndSend(trainer: WordsTrainer, chatId: Long) {
+        val question = trainer.createAndGetNextQuestion()?.variants
+        if (question != null) {
+            trainer.createAndGetNextQuestion()?.let { sendQuestionToUser(chatId, it) }
+        } else {
+            sendMessage(chatId, "Вы выучили все слова!")
+        }
     }
 }
