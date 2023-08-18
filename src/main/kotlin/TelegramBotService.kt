@@ -59,15 +59,14 @@ class TelegramBotService(
             text = message,
         )
         val requestBodyString = json.encodeToString(requestBody)
-
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
             .newBuilder()
             .uri(URI.create(urlSendMessage))
+            .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
-
         return response.body()
     }
 

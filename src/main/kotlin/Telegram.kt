@@ -78,8 +78,8 @@ fun main(args: Array<String>) {
         }
         if (data == STATISTICS_TEXT.lowercase() && chatId != null) {
             botService.sendMessage(
-                json, botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
-                        "${statistics.totalAnswers} | ${statistics.percent}%"
+                json, botToken, chatId,
+                "Статистика: Выучено ${statistics.correctAnswersCount} из ${statistics.totalAnswers} | ${statistics.percent}%"
             )
         }
         if (data == LEARN_WORD_TEXT && chatId != null) {
