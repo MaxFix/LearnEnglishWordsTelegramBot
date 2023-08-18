@@ -1,85 +1,115 @@
-const val WELCOME_TEXT = "Hello"
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
 const val MENU_TEXT = "/start"
 const val STATISTICS_TEXT = "statistics_clicked"
 const val LEARN_WORD_TEXT = "learn_words_clicked"
 const val EXIT_BTN = "exit_btn"
 private const val botToken = "5902907319:AAFb-XNI2kqZeQ1HN4zjJNAIgvq_mtjOXLA"
 
+@Serializable
+data class Update(
+    @SerialName("update_id")
+    val updateId: Long,
+    @SerialName("message")
+    val message: Message? = null,
+    @SerialName("callback_query")
+    val callbackQuery: CallbackQuery? = null,
+)
+
+@Serializable
+data class Response(
+    @SerialName("result")
+    val result: List<Update>,
+)
+
+@Serializable
+data class Message(
+    @SerialName("text")
+    val text: String,
+    @SerialName("chat")
+    val chat: Chat,
+)
+
+@Serializable
+data class CallbackQuery(
+    @SerialName("data")
+    val data: String,
+    @SerialName("message")
+    val message: Message? = null,
+)
+
+@Serializable
+data class Chat(
+    @SerialName("id")
+    val id: Long,
+)
+
 fun main(args: Array<String>) {
 
     val botService = TelegramBotService(botToken)
     val botToken = args[0]
-    var updateId = 0
-    var chatId = 0
+    var lastUpdateId = 0L
 
-    val regexUpdateId = "\"update_id\":(.+?),".toRegex()
-    val regexChatId = "\"chat\":\\{\"id\":(.+?),".toRegex()
-    val regexText = "\"text\":\"(.+?)\"".toRegex()
-    val regexData = "\"data\":\"(.+?)\"".toRegex()
+    val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     val trainer = WordsTrainer()
     val statistics = trainer.getStatistics()
 
     while (true) {
         Thread.sleep(1000)
-        val updates: String = botService.getUpdates(botToken, updateId)
-        println(updates)
+        val responseString: String = botService.getUpdates(botToken, lastUpdateId)
+        println(responseString)
+        val response: Response = json.decodeFromString(responseString)
+        val updates = response.result
+        val firstUpdate = updates.firstOrNull() ?: continue
+        val updateId = firstUpdate.updateId
+        lastUpdateId = updateId + 1
 
-        val matchResultUpdateId = regexUpdateId.find(updates)
-        val matchResultChatId = regexChatId.find(updates)
-        val matchResultText = regexText.find(updates)
-        val matchResultData = regexData.find(updates)
+        val message = firstUpdate.message?.text
+        val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callbackQuery?.message?.chat?.id
+        val data = firstUpdate.callbackQuery?.data
 
-        if (matchResultUpdateId != null) {
-            updateId = matchResultUpdateId.groupValues[1].toInt() + 1
+        if (message?.lowercase() == MENU_TEXT && chatId != null) {
+            botService.sendMenu(json, botToken, chatId)
         }
-        if (matchResultChatId != null) {
-            chatId = matchResultChatId.groupValues[1].toInt()
-        }
-
-        val text = matchResultText?.groupValues?.getOrNull(1)
-        val data = matchResultData?.groupValues?.getOrNull(1)
-
-        if (matchResultText != null && matchResultText.groupValues[1] == WELCOME_TEXT.lowercase()) {
-            botService.sendMessage(botToken, chatId, WELCOME_TEXT)
-        }
-        if (text == MENU_TEXT.lowercase()) {
-            botService.sendMenu(botToken, chatId)
-        }
-        if (matchResultData != null && data == STATISTICS_TEXT.lowercase()) {
+        if (data == STATISTICS_TEXT.lowercase() && chatId != null) {
             botService.sendMessage(
-                botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
+                json, botToken, chatId, "Статистика: Выучено ${statistics.correctAnswersCount} из " +
                         "${statistics.totalAnswers} | ${statistics.percent}%"
             )
         }
-        if (matchResultData != null && matchResultData.groupValues[1] == LEARN_WORD_TEXT.lowercase()) {
-            checkNextQuestionAndSend(trainer, botToken, chatId)
+        if (data == LEARN_WORD_TEXT && chatId != null) {
+            checkNextQuestionAndSend(json, trainer, botToken, chatId)
         }
-        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
+        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true && chatId != null) {
             val answerNumber = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if (trainer.checkAnswer(answerNumber)) {
-                botService.sendMessage(botToken, chatId, "Правильно!")
+                botService.sendMessage(json, botToken, chatId, "Правильно!")
             } else {
                 botService.sendMessage(
-                    botToken, chatId,
+                    json, botToken, chatId,
                     "Не правильно: ${trainer.question?.correctAnswer?.original} - " +
                             "${trainer.question?.correctAnswer?.translate}"
                 )
             }
-            checkNextQuestionAndSend(trainer, botToken, chatId)
+            checkNextQuestionAndSend(json, trainer, botToken, chatId)
         }
-        if (data == EXIT_BTN.lowercase()) {
-            botService.sendMenu(botToken, chatId)
+        if (data == EXIT_BTN.lowercase() && chatId != null) {
+            botService.sendMenu(json, botToken, chatId)
         }
     }
 }
 
-fun checkNextQuestionAndSend(trainer: WordsTrainer, botToken: String, chatId: Int) {
+fun checkNextQuestionAndSend(json: Json, trainer: WordsTrainer, botToken: String, chatId: Long) {
     val botService = TelegramBotService(botToken)
     val question = trainer.createAndGetNextQuestion()?.variants
     if (question != null) {
-        trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(botToken, chatId, it) }
+        trainer.createAndGetNextQuestion()?.let { botService.sendQuestionToUser(json, botToken, chatId, it) }
     } else {
-        botService.sendMessage(botToken, chatId, "Вы выучили все слова!")
+        botService.sendMessage(json, botToken, chatId, "Вы выучили все слова!")
     }
 }

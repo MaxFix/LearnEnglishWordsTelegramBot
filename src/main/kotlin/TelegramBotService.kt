@@ -1,18 +1,44 @@
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.net.URI
-import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
 const val API_TELEGRAM = "https://api.telegram.org/bot"
+
+@Serializable
+data class SendMessageRequest(
+    @SerialName("chat_id")
+    val chatId: Long,
+    @SerialName("text")
+    val text: String,
+    @SerialName("reply_markup")
+    val replyMarkup: ReplyMarkup? = null,
+)
+
+@Serializable
+data class ReplyMarkup(
+    @SerialName("inline_keyboard")
+    val inlineKeyboard: List<List<InlineKeyBoard>>
+)
+
+@Serializable
+data class InlineKeyBoard(
+    @SerialName("callback_data")
+    val callbackData: String,
+    @SerialName("text")
+    val text: String,
+)
 
 class TelegramBotService(
     private val botToken: String,
 ) {
 
-    fun getUpdates(botToken: String, updateId: Int): String {
+    fun getUpdates(botToken: String, updateId: Long): String {
         val urlUpdate = "$API_TELEGRAM${this.botToken}/getUpdates?offset=$updateId"
 
         val client: HttpClient = HttpClient.newBuilder().build()
@@ -25,95 +51,76 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendMessage(botToken: String, chatId: Int, message: String): String {
-        val encoded = URLEncoder.encode(
-            message,
-            StandardCharsets.UTF_8
+    fun sendMessage(json: Json, botToken: String, chatId: Long, message: String): String {
+
+        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
+        val requestBody = SendMessageRequest(
+            chatId = chatId,
+            text = message,
         )
-        println(encoded)
-
-        val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage?chat_id=$chatId&text=$encoded"
+        val requestBodyString = json.encodeToString(requestBody)
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
             .newBuilder()
             .uri(URI.create(urlSendMessage))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         return response.body()
     }
 
-    fun sendMenu(botToken: String, chatId: Int): String {
+    fun sendMenu(json: Json, botToken: String, chatId: Long): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
-        val sendMenuBody = """
-            {
-            	"chat_id": $chatId,
-            	"text": "Основное меню",
-            	"reply_markup": {
-            		"inline_keyboard": [
-                        [
-            	 		{
-            	  			"text": "Изучить слова",
-            	  			"callback_data": "learn_words_clicked"
-            			},
-            			{
-            				"text": "Статистика",
-            				"callback_data": "statistics_clicked"
-            			}
-                        ]
-            		]
-            	}
-            }
-            """.trimIndent()
+
+        val requestBody = SendMessageRequest(
+            chatId = chatId,
+            text = "Основное меню",
+            replyMarkup = ReplyMarkup(
+                listOf(
+                    listOf(
+                        InlineKeyBoard(text = "Изучать слова", callbackData = LEARN_WORD_TEXT),
+                        InlineKeyBoard(text = "Статистика", callbackData = STATISTICS_TEXT),
+                    )
+                )
+            )
+        )
+        val requestBodyString = json.encodeToString(requestBody)
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
             .newBuilder()
             .uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         return response.body()
     }
 
-    fun sendQuestionToUser(botToken: String, chatId: Int, question: Question): String {
+    fun sendQuestionToUser(json: Json, botToken: String, chatId: Long, question: Question): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
-        val allWords = question.variants
-        val sendQuestionBody = """
-                {
-                "chat_id": $chatId,
-                "text": "${question.correctAnswer.original}",
-                "callback_data": "question",
-                "reply_markup": {
-                "inline_keyboard": [
-                            ${
-            allWords.mapIndexed { index, answer ->
-                "[{\"text\": \"${answer.translate}\", \"callback_data\": \"${CALLBACK_DATA_ANSWER_PREFIX + index}\"}]"
-            }.joinToString(",")
-        }
-        
-        ,[
-                {
-                "text": "Выйти",
-            	"callback_data": "exit_btn"
-                }
-                            ]
-                        ]
-                    }
-                }
-            """.trimIndent()
-
-        println(sendQuestionBody)
+        val requestBody = SendMessageRequest(
+            chatId = chatId,
+            text = question.correctAnswer.original,
+            replyMarkup = ReplyMarkup(
+                listOf(question.variants.mapIndexed { index, word ->
+                    InlineKeyBoard(
+                        text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
+                    )
+                })
+            )
+        )
+        val requestBodyString = json.encodeToString(requestBody)
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
             .newBuilder()
             .uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(sendQuestionBody))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
         val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
