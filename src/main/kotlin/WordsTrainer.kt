@@ -14,7 +14,7 @@ data class Question(
 )
 
 class WordsTrainer(
-    private val fileName: String = "words.txt",
+    fileName: String = "words.txt",
     private val wordsFile: File = File(fileName),
     var question: Question? = null,
     private val maxLearnedCounter: Int = 3,
@@ -71,7 +71,6 @@ class WordsTrainer(
 
     private fun loadDictionary(): List<Word> {
         try {
-           val wordsFile = File(fileName)
             if (!wordsFile.exists()) {
                 File("words.txt").copyTo(wordsFile)
             }

@@ -59,32 +59,31 @@ fun main(args: Array<String>) {
 
     while (true) {
         Thread.sleep(1000)
-        val responseString: String = TelegramBotService(botToken,json).getUpdates(lastUpdateId)
+        val responseString: String = TelegramBotService(botToken, json).getUpdates(lastUpdateId)
         println(responseString)
         val response: Response = json.decodeFromString(responseString)
-        val updates = response.result
         if (response.result.isEmpty()) continue
         val sortedUpdates = response.result.sortedBy { it.updateId }
-        sortedUpdates.forEach { handleUpdate(it, json, botToken, trainers) }
+        val botService = TelegramBotService(botToken, json)
+        sortedUpdates.forEach { handleUpdate(it, botService, trainers) }
         lastUpdateId = sortedUpdates.last().updateId + 1
     }
 }
 
-fun handleUpdate(update: Update, json: Json, botToken: String, trainers: HashMap<Long, WordsTrainer>) {
+fun handleUpdate(update: Update, botService: TelegramBotService, trainers: HashMap<Long, WordsTrainer>) {
 
-    val botService = TelegramBotService(botToken,json)
+
     val message = update.message?.text
     val chatId = update.message?.chat?.id ?: update.callbackQuery?.message?.chat?.id ?: return
     val data = update.callbackQuery?.data
 
     val trainer = trainers.getOrPut(chatId) { WordsTrainer("$chatId.txt") }
 
-    val statistics = trainer.getStatistics()
-
     if (message?.lowercase() == MENU_TEXT) {
         botService.sendMenu(chatId)
     }
     if (data == STATISTICS_TEXT.lowercase()) {
+        val statistics = trainer.getStatistics()
         botService.sendMessage(
             chatId,
             "Статистика: Выучено ${statistics.correctAnswersCount} из ${statistics.totalAnswers} | ${statistics.percent}%"
@@ -104,7 +103,7 @@ fun handleUpdate(update: Update, json: Json, botToken: String, trainers: HashMap
                         "${trainer.question?.correctAnswer?.translate}"
             )
         }
-        TelegramBotService(botToken,json).checkNextQuestionAndSend(trainer, chatId)
+        botService.checkNextQuestionAndSend(trainer, chatId)
     }
     if (data == EXIT_BTN.lowercase()) {
         botService.sendMenu(chatId)

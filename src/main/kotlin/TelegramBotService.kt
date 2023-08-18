@@ -36,12 +36,11 @@ data class InlineKeyBoard(
 
 class TelegramBotService(
     private val botToken: String,
-    val json: Json,
+    private val json: Json,
+) {
 
-    ) {
-
-    fun getUpdates(updateId: Long): String {
-        val urlUpdate = "$API_TELEGRAM${botToken}/getUpdates?offset=$updateId"
+    fun getUpdates(lastUpdateId: Long): String {
+        val urlUpdate = "$API_TELEGRAM${botToken}/getUpdates?offset=$lastUpdateId"
 
         val client: HttpClient = HttpClient.newBuilder().build()
         val request = HttpRequest
@@ -106,10 +105,11 @@ class TelegramBotService(
 
     fun sendQuestionToUser(chatId: Long, question: Question): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
-        val questionVariants = question.variants.mapIndexed{ index, word ->
+        val questionVariants = question.variants.mapIndexed { index, word ->
             InlineKeyBoard(
                 text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
-            )}
+            )
+        }
         val requestBody = SendMessageRequest(
             chatId = chatId,
             text = question.correctAnswer.original,
