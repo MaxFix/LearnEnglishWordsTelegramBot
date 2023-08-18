@@ -23,7 +23,7 @@ data class SendMessageRequest(
 @Serializable
 data class ReplyMarkup(
     @SerialName("inline_keyboard")
-    val inlineKeyboard: List<List<InlineKeyBoard>>
+    val inlineKeyboard: List<List<InlineKeyBoard>>,
 )
 
 @Serializable
@@ -81,6 +81,9 @@ class TelegramBotService(
                     listOf(
                         InlineKeyBoard(text = "Изучать слова", callbackData = LEARN_WORD_TEXT),
                         InlineKeyBoard(text = "Статистика", callbackData = STATISTICS_TEXT),
+                    ),
+                    listOf(
+                        InlineKeyBoard(text = "Сбросить статистику", callbackData = RESET_CLICKED),
                     )
                 )
             )
@@ -105,11 +108,13 @@ class TelegramBotService(
             chatId = chatId,
             text = question.correctAnswer.original,
             replyMarkup = ReplyMarkup(
-                listOf(question.variants.mapIndexed { index, word ->
-                    InlineKeyBoard(
-                        text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
-                    )
-                })
+                inlineKeyboard = listOf(
+                    question.variants.mapIndexed { index, word ->
+                        InlineKeyBoard(
+                            text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
+                        )},
+                    listOf(InlineKeyBoard(text = "Выйти в основное меню", callbackData = "exit_btn"))
+                )
             )
         )
         val requestBodyString = json.encodeToString(requestBody)
