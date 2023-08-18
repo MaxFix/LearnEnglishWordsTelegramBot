@@ -65,7 +65,7 @@ fun main(args: Array<String>) {
         val updates = response.result
         if (response.result.isEmpty()) continue
         val sortedUpdates = response.result.sortedBy { it.updateId }
-        sortedUpdates.forEach{ handleUpdate(it, json, botToken, trainers)}
+        sortedUpdates.forEach { handleUpdate(it, json, botToken, trainers) }
         lastUpdateId = sortedUpdates.last().updateId + 1
     }
 }
@@ -78,7 +78,7 @@ fun handleUpdate(update: Update, json: Json, botToken: String, trainers: HashMap
     val chatId = update.message?.chat?.id ?: update.callbackQuery?.message?.chat?.id ?: return
     val data = update.callbackQuery?.data
 
-    val trainer = trainers.getOrPut(chatId) { WordsTrainer("$chatId.txt")}
+    val trainer = trainers.getOrPut(chatId) { WordsTrainer("$chatId.txt") }
 
     val statistics = trainer.getStatistics()
 
