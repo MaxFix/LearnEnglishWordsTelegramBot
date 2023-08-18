@@ -103,12 +103,11 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendQuestionToUser(chatId: Long, question: Question): String {
+    private fun sendQuestionToUser(chatId: Long, question: Question): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
         val questionVariants = question.variants.mapIndexed { index, word ->
             InlineKeyBoard(
-                text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
-            )
+                text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index")
         }
         val requestBody = SendMessageRequest(
             chatId = chatId,
