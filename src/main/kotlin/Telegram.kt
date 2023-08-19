@@ -56,15 +56,15 @@ fun main(args: Array<String>) {
     }
 
     val trainers = HashMap<Long, WordsTrainer>()
+    val botService = TelegramBotService(botToken, json)
 
     while (true) {
         Thread.sleep(1000)
-        val responseString: String = TelegramBotService(botToken, json).getUpdates(lastUpdateId)
+        val responseString: String = botService.getUpdates(lastUpdateId)
         println(responseString)
         val response: Response = json.decodeFromString(responseString)
         if (response.result.isEmpty()) continue
         val sortedUpdates = response.result.sortedBy { it.updateId }
-        val botService = TelegramBotService(botToken, json)
         sortedUpdates.forEach { handleUpdate(it, botService, trainers) }
         lastUpdateId = sortedUpdates.last().updateId + 1
     }
