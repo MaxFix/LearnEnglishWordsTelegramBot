@@ -106,15 +106,14 @@ class TelegramBotService(
     private fun sendQuestionToUser(chatId: Long, question: Question): String {
         val urlSendMessage = "$API_TELEGRAM${this.botToken}/sendMessage"
         val questionVariants = question.variants.mapIndexed { index, word ->
-            InlineKeyBoard(
-                text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index")
+            listOf( InlineKeyBoard(
+                text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"))
         }
         val requestBody = SendMessageRequest(
             chatId = chatId,
             text = question.correctAnswer.original,
             replyMarkup = ReplyMarkup(
-                inlineKeyboard = listOf(
-                    questionVariants,
+                inlineKeyboard = questionVariants + listOf(
                     listOf(InlineKeyBoard(text = "Выйти в основное меню", callbackData = "exit_btn"))
                 )
             )
