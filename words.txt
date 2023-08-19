@@ -1,7 +1,41 @@
-hello|привет|3
-dog|собака|3
-cat|кошка|1
-snake|змея|3
-horse|лошадь|2
-mouse|мышь|1
-ball|мяч|3
+hello|привет|0
+dog|собака|0
+cat|кошка|0
+snake|змея|0
+horse|лошадь|0
+mouse|мышь|0
+ball|мяч|0
+doubt|сомнения|0
+insolence|надменность|0
+debt|долг|0
+heir|наследник|0
+queue|очередь|0
+instead|вместо|0
+absorb|поглощать|0
+engage|привлекать|0
+exhausted|измучена|0
+favour|услуга|0
+insist|настраивать|0
+nemesis|заклятый враг|0
+robber|грабитель|0
+opulence|богатство|0
+poverty|нищета|0
+influence|влиять|0
+ache|боль|0
+insane|безумный|0
+circumstances|обстоятельства|0
+choker|душитель|0
+anguish|мучения|0
+suffering|страдания|0
+bishop|епископ|0
+scarecrow|пугало|0
+faith|вера|0
+dirty hands|кастет|0
+whoever|тот кто|0
+whack|бить|0
+take over|перенимать|0
+timber|древесина|0
+spoil|портиться|0
+basement|подвал|0
+exclamation|восклицание|0
+divider|делитель|0
