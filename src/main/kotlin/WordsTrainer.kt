@@ -96,7 +96,7 @@ class WordsTrainer(
     }
 
     fun resetProgress() {
-        dictionary.forEach{ it.learned = 0}
+        dictionary.forEach{ it.learned = 0 }
         saveDictionary()
     }
 }
