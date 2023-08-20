@@ -38,7 +38,7 @@ class WordsTrainer(
         var learnedWords = dictionary.filter { it.learned >= maxLearnedCounter }
         val unlearnedWords = dictionary.filter { it.learned < maxLearnedCounter }
         if (unlearnedWords.isEmpty()) return null
-        val selectedValues = unlearnedWords.take(numberOfSelectedWords).shuffled()
+        val selectedValues = unlearnedWords.shuffled().take(numberOfSelectedWords)
 
         if (selectedValues.size < numberOfSelectedWords) {
             learnedWords = learnedWords.take(numberOfSelectedWords - selectedValues.size).shuffled()
