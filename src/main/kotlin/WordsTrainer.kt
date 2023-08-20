@@ -45,7 +45,7 @@ class WordsTrainer(
         }
 
         val unlearnedWord = selectedValues.random()
-        val allVariants = (unlearnedWords + learnedWords).take(4)
+        val allVariants = (unlearnedWords + learnedWords).take(4).shuffled()
 
         question = Question(
             variants = allVariants,

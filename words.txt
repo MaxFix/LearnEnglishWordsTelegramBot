@@ -39,3 +39,12 @@ spoil|портиться|0
 basement|подвал|0
 exclamation|восклицание|0
 divider|делитель|0
+necessary|необходимый|0
+doomed|обреченный|0
+eager|жаждущий|0
+formidable|грозный|0
+no savior|нет спасителя|0
+bow down|поклоняться|0
+devoured|съеденый|0
+borrowed|заимствованный|0
+fame|слава|0
