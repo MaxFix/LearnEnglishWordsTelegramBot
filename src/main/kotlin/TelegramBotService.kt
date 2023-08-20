@@ -133,9 +133,10 @@ class TelegramBotService(
     }
 
     fun checkNextQuestionAndSend(trainer: WordsTrainer, chatId: Long) {
-        val question = trainer.createAndGetNextQuestion()?.variants
-        if (question != null) {
-            trainer.createAndGetNextQuestion()?.let { sendQuestionToUser(chatId, it) }
+        val question = trainer.createAndGetNextQuestion()
+        if(question?.variants != null) {
+            question?.let{ sendQuestionToUser(chatId, it) }
+            }
         } else {
             sendMessage(chatId, "Вы выучили все слова!")
         }
