@@ -20,7 +20,7 @@ class WordsTrainer(
     private val maxLearnedCounter: Int = 3,
     private val numberOfSelectedWords: Int = 4,
 ) {
-    private var dictionary = loadDictionary()
+    private val dictionary = loadDictionary()
 
 
     fun getStatistics(): Statistics {
@@ -69,7 +69,7 @@ class WordsTrainer(
         } ?: false
     }
 
-    private fun loadDictionary(): List<Word> {
+    private fun loadDictionary(): MutableList<Word> {
         try {
             if (!wordsFile.exists()) {
                 File("words.txt").copyTo(wordsFile)
@@ -101,6 +101,7 @@ class WordsTrainer(
     }
 
     fun addWordInDictionary(word: Word) {
-        wordsFile.appendText("${word.original}|${word.translate}|${word.learned}\n")
+        dictionary.add(element = word)
+        saveDictionary()
     }
 }
