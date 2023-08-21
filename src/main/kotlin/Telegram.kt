@@ -118,12 +118,14 @@ fun handleUpdate(update: Update, botService: TelegramBotService, trainers: HashM
     if(message?.startsWith(ADD_WORD) == true) {
         try {
             val newWord = message.substringAfter(ADD_WORD).split(":")
-            trainer.addWordInDictionary(Word(newWord[0].trim(), newWord[1].trim()))
-            botService.sendMessage(chatId,"Слово успешно добавлено в словарь!") // сработает при любом исходе
+            if(trainer.addWordInDictionary(Word(newWord[0].trim(), newWord[1].trim()))) {
+                botService.sendMessage(chatId,"Слово успешно добавлено в словарь!")
+            } else {
+                botService.sendMessage(chatId, "Такое слово уже есть!")
+            }
+
         } catch (e: Exception) {
             botService.sendMessage(chatId,"Некорректный либо пустой ввод")
         }
-    } else {
-        botService.sendMessage(chatId, "Формат введенного слова неверный")
     }
 }

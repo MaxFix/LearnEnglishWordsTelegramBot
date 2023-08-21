@@ -96,16 +96,15 @@ class WordsTrainer(
     }
 
     fun resetProgress() {
-        dictionary.forEach{ it.learned = 0 }
+        dictionary.forEach { it.learned = 0 }
         saveDictionary()
     }
 
-    fun addWordInDictionary(word: Word) {
-        if(!dictionary.contains(word)) {
+    fun addWordInDictionary(word: Word): Boolean {
+        return if (!dictionary.contains(word)) {
             dictionary.add(element = word)
             saveDictionary()
-        } else {
-            println("Слово уже содержится в словаре")
-        }
+            true
+        } else false
     }
 }
