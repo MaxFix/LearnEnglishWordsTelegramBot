@@ -20,7 +20,7 @@ class WordsTrainer(
     private val maxLearnedCounter: Int = 3,
     private val numberOfSelectedWords: Int = 4,
 ) {
-    private val dictionary = loadDictionary()
+    private var dictionary = loadDictionary()
 
 
     fun getStatistics(): Statistics {
@@ -98,5 +98,9 @@ class WordsTrainer(
     fun resetProgress() {
         dictionary.forEach{ it.learned = 0 }
         saveDictionary()
+    }
+
+    fun addWordInDictionary(word: Word) {
+        wordsFile.appendText("${word.original}|${word.translate}|${word.learned}\n")
     }
 }
