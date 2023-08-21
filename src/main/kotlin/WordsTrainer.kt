@@ -101,7 +101,11 @@ class WordsTrainer(
     }
 
     fun addWordInDictionary(word: Word) {
-        dictionary.add(element = word)
-        saveDictionary()
+        if(!dictionary.contains(word)) {
+            dictionary.add(element = word)
+            saveDictionary()
+        } else {
+            println("Слово уже содержится в словаре")
+        }
     }
 }
