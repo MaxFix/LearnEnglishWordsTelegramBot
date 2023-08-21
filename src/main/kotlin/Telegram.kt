@@ -3,6 +3,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 const val MENU_TEXT = "/start"
+const val ADD_WORD = "/add"
 const val STATISTICS_TEXT = "statistics_clicked"
 const val LEARN_WORD_TEXT = "learn_words_clicked"
 const val EXIT_BTN = "exit_btn"
@@ -112,5 +113,19 @@ fun handleUpdate(update: Update, botService: TelegramBotService, trainers: HashM
     if (data == RESET_CLICKED) {
         trainer.resetProgress()
         botService.sendMessage(chatId, "Прогресс сброшен")
+    }
+
+    if(message?.startsWith(ADD_WORD) == true) {
+        try {
+            val newWord = message.substringAfter(ADD_WORD).split(":")
+            if(trainer.addWordInDictionary(Word(newWord[0].trim(), newWord[1].trim()))) {
+                botService.sendMessage(chatId,"Слово успешно добавлено в словарь!")
+            } else {
+                botService.sendMessage(chatId, "Такое слово уже есть!")
+            }
+
+        } catch (e: Exception) {
+            botService.sendMessage(chatId,"Некорректный либо пустой ввод")
+        }
     }
 }

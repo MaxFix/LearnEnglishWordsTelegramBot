@@ -69,7 +69,7 @@ class WordsTrainer(
         } ?: false
     }
 
-    private fun loadDictionary(): List<Word> {
+    private fun loadDictionary(): MutableList<Word> {
         try {
             if (!wordsFile.exists()) {
                 File("words.txt").copyTo(wordsFile)
@@ -96,7 +96,15 @@ class WordsTrainer(
     }
 
     fun resetProgress() {
-        dictionary.forEach{ it.learned = 0 }
+        dictionary.forEach { it.learned = 0 }
         saveDictionary()
+    }
+
+    fun addWordInDictionary(word: Word): Boolean {
+        return if (!dictionary.contains(word)) {
+            dictionary.add(element = word)
+            saveDictionary()
+            true
+        } else false
     }
 }
